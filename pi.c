@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <mpi.h>
 
-int rand_float();
+float rand_float();
 
 
 
@@ -21,9 +21,9 @@ int main(int argc, char *argv[])
 	}
 	*/
 	int seed = time(NULL);
-    srand(seed);
+	srand(seed);
 	for (i=0; i<100; i++)
-		printf("%d\n", rand_float());
+	  printf("%f\n", rand_float());
 }
 
 
