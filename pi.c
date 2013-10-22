@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <mpi.h>
 
-int rand_lim(int limit);
+int rand_float();
 
 
 
@@ -20,13 +20,14 @@ int main(int argc, char *argv[])
 		double y = random();
 	}
 	*/
-	
+	int seed = time(NULL);
+    srand(seed);
 	for (i=0; i<100; i++)
-		printf("%d\n", random);
+		printf("%d\n", rand_float());
 }
 
 
-double random()
+float rand_float()
 {
-	return ( (double)rand() / (double)RAND_MAX )*2 - 1;
+	return -1+2*((float)rand())/RAND_MAX;
 }
