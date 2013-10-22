@@ -5,13 +5,15 @@
 #include <stdlib.h>
 #include <mpi.h>
 
+#define sqr(x)   ((x)*(x))
+
 float rand_float();
 
 
 
 int main(int argc, char *argv[])
 {
-	int i, npoints = 1000;
+	int i, npoints = 10000;
 	int circle_count = 0;
 	
 	int seed = time(NULL);
@@ -19,20 +21,21 @@ int main(int argc, char *argv[])
 	
 	for (i=0; i<npoints; i++)
 	{
-		double x = random();
-		double y = random();
+		float x = rand_float();
+		float y = rand_float();
 		if ((sqr(x) + sqr(y)) >=1)
 			circle_count = circle_count + 1;
 	}
 	
 	double pi = 4.0*circle_count/npoints;
 	
-	printf("Pi is %d.\n", pi);
+	printf("circle_count is %d.\n", circle_count);
+	//printf("Pi is %d.\n", pi);
 	
 }
 
 
 float rand_float()
 {
-	return -1+2*((float)rand())/RAND_MAX;
+  return /*-1+2**/((float)rand())/RAND_MAX;
 }
