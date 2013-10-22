@@ -33,13 +33,45 @@ int main(int argc, char *argv[])
 	printf("Calculating pi serially took %f milliseconds.\n", diff1);
 	
 	t1 = clock();
-	calculate_pi_parallel(taskid, numtasks);
+	
+	//calculate_pi_parallel(taskid, numtasks);
+	int rc;
+	int npoints;
+	
+	float pi,
+		  pi_home,
+		  pi_sum,
+		  pi_average;
+	
+	npoints = NUM_POINTS/numtasks;
+	
+	/* This code generates a value of pi in every process */
+	int seed = time(NULL);
+	srand(seed);
+	
+	pi_home = dboard(npoints);
+	
+	rc = MPI_Reduce(&pi_home, &pi_sum, 1, MPI_FLOAT, MPI_SUM, 
+					0, MPI_COMM_WORLD);
+	
+	if (rc != MPI_SUCCESS)
+		printf("%d: failure on mpi_reduce\n", taskid);
+		
+	/* Master computes average for all iterations */
+	if (taskid == 0) 
+	{
+		pi = pi_sum/numtasks;
+		printf("Pi calculated using parallel programming is %f.", pi);
+		//printf("Average value of pi = %f\n", pi);
+	}
+	
+	MPI_Finalize();
+	
+	
 	t2 = clock();
 	diff2 = (((float)t2 - (float)t1) / 1000000.0F ) * 1000;
 	
 	printf("Calculating pi parallel took %f milliseconds.\n", diff2);
-		
-	MPI_Finalize();
 		
 	return 0;
 }
@@ -82,6 +114,8 @@ void calculate_pi_parallel(int taskid, int numtasks)
 		printf("Pi calculated using parallel programming is %f.", pi);
 		//printf("Average value of pi = %f\n", pi);
 	}
+	
+	MPI_Finalize();
 }
 
 float dboard(int throws)
