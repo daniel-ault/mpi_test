@@ -13,17 +13,43 @@ float rand_float();
 
 int main(int argc, char *argv[])
 {
-	int i, npoints = 100000;
+	int taskid, numtasks, rc;
+	int npoints = 100000;
 	
+	float pi,
+		  pi_home,
+		  pi_sum,
+		  pi_average;
+	
+	MPI_Init(&argc, &argv);
+	MPI_Comm_rank(MPI_COMM_WORLD, &taskid);
+	MPI_Comm_size(MPI_COMM_WORLD, &numtasks);
+	
+	/* This code generates a value of pi in every process */
 	int seed = time(NULL);
 	srand(seed);
 	
-	dboard(npoints);
+	float pi_home = dboard(npoints);
+	
+	rc = MPI_Reduce(&pi_home, &pi_sum, 1, MPI_FLOAT, MPI_SUM, 
+					0, MPI_COMM_WORLD);
+	
+	if (rc != MPI_SUCCESS)
+		printf("%d: failure on mpi_reduce\n", taskid);
+		
+	/* Master computes average for all iterations */
+	if (taskid == 0) 
+	{
+		pi = pi_sum/numtasks;
+		printf("Average value of pi = %f\n", pi);
+	}
+
+	MPI_Finalize();
 		
 	return 0;
 }
 
-int dboard(int throws)
+float dboard(int throws)
 {
 	int i, circle_count = 0;
 	
@@ -36,11 +62,10 @@ int dboard(int throws)
 	}
 	
 	float pi = 4.0*(float)circle_count/(float)throws;
+
+	//printf("Pi is %f.\n", pi);
 	
-	//printf("circle_count is %d.\n", circle_count);
-	printf("Pi is %f.\n", pi);
-	
-	return 1;
+	return pi;
 }
 
 float rand_float()
