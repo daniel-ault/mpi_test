@@ -34,10 +34,21 @@ int main(int argc, char *argv[])
 	
 	t1 = clock();
 	calculate_pi_parallel(taskid, numtasks);
+	
 	t2 = clock();
 	diff2 = (((float)t2 - (float)t1) / 1000000.0F ) * 1000;
 	
-	printf("Calculating pi parallel took %f milliseconds.\n", diff2);
+		/* Master computes average for all iterations */
+	if (taskid == 0) 
+	{
+		pi = pi_sum/numtasks;
+		printf("Pi calculated using parallel programming is %f.", pi);
+		printf("Calculating pi parallel took %f milliseconds.\n", diff2);
+		//printf("Average value of pi = %f\n", pi);
+	}
+	
+	MPI_Finalize();
+	
 		
 	return 0;
 }
@@ -73,15 +84,7 @@ void calculate_pi_parallel(int taskid, int numtasks)
 	if (rc != MPI_SUCCESS)
 		printf("%d: failure on mpi_reduce\n", taskid);
 		
-	/* Master computes average for all iterations */
-	if (taskid == 0) 
-	{
-		pi = pi_sum/numtasks;
-		printf("Pi calculated using parallel programming is %f.", pi);
-		//printf("Average value of pi = %f\n", pi);
-	}
-	
-	MPI_Finalize();
+
 }
 
 float dboard(int throws)
