@@ -18,14 +18,7 @@ int main(int argc, char *argv[])
 {	
 	float diff1, diff2;
 	clock_t t1, t2;
-	int rc;
-	int npoints;
 	
-	float pi,
-		  pi_home,
-		  pi_sum,
-		  pi_average;
-		 
 	int taskid, numtasks;
 	
 	MPI_Init(&argc, &argv);
@@ -33,30 +26,14 @@ int main(int argc, char *argv[])
 	MPI_Comm_size(MPI_COMM_WORLD, &numtasks);
 	
 	t1 = clock();
-	npoints = NUM_POINTS/numtasks;
+	calculate_pi_serial();
+	t2 = clock();
+	diff1 = (((float)t2 - (float)t1) / 1000000.0F ) * 1000;
 	
-	/* This code generates a value of pi in every process */
-	int seed = time(NULL);
-	srand(seed);
+	printf("Calculating pi serially took %f milliseconds.\n", diff1);
 	
-	pi_home = dboard(npoints);
-	
-	rc = MPI_Reduce(&pi_home, &pi_sum, 1, MPI_FLOAT, MPI_SUM, 
-					0, MPI_COMM_WORLD);
-	
-	if (rc != MPI_SUCCESS)
-		printf("%d: failure on mpi_reduce\n", taskid);
-		
-	/* Master computes average for all iterations */
-	if (taskid == 0) 
-	{
-		pi = pi_sum/numtasks;
-		printf("Pi calculated using parallel programming is %f.", pi);
-		//printf("Average value of pi = %f\n", pi);
-	}
-	
-	MPI_Finalize();
-	
+	t1 = clock();
+	calculate_pi_parallel(taskid, numtasks);
 	t2 = clock();
 	diff2 = (((float)t2 - (float)t1) / 1000000.0F ) * 1000;
 	if (taskid == 0)
