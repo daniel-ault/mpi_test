@@ -3,18 +3,49 @@
    
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #include <mpi.h>
 
 #define sqr(x)   ((x)*(x))
+#define NUM_POINTS  80000000
 
 float rand_float();
 
 
 
 int main(int argc, char *argv[])
+{	
+	float diff1, diff2;
+	clock_t t1, t2;
+	
+	t1 = clock();
+	calculate_pi_serial()
+	t2 = clock();
+	diff1 = (((float)t2 - (float)t1) / 1000000.0F ) * 1000;
+	
+	printf("Calculating pi serially took %f milliseconds.\n", diff1);
+	
+	t1 = clock();
+	calculate_pi_parallel(argc, argv)
+	t2 = clock();
+	diff2 = (((float)t2 - (float)t1) / 1000000.0F ) * 1000;
+	
+	printf("Calculating pi parallel took %f milliseconds.\n", diff2);
+		
+	return 0;
+}
+
+float calculate_pi_serial()
+{
+	float pi = dboard(NUM_POINTS);
+	
+	printf("Pi calculated serially is %f.\n", pi);
+}
+
+void calculate_pi_parallel(int argc, char *argv[])
 {
 	int taskid, numtasks, rc;
-	int npoints = 100000;
+	int npoints;
 	
 	float pi,
 		  pi_home,
@@ -24,6 +55,8 @@ int main(int argc, char *argv[])
 	MPI_Init(&argc, &argv);
 	MPI_Comm_rank(MPI_COMM_WORLD, &taskid);
 	MPI_Comm_size(MPI_COMM_WORLD, &numtasks);
+	
+	npoints = NUM_POINTS/numtasks;
 	
 	/* This code generates a value of pi in every process */
 	int seed = time(NULL);
@@ -41,12 +74,11 @@ int main(int argc, char *argv[])
 	if (taskid == 0) 
 	{
 		pi = pi_sum/numtasks;
-		printf("Average value of pi = %f\n", pi);
+		printf("Pi calculated using parallel programming is %f.", pi);
+		//printf("Average value of pi = %f\n", pi);
 	}
 
 	MPI_Finalize();
-		
-	return 0;
 }
 
 float dboard(int throws)
