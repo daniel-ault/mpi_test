@@ -19,6 +19,12 @@ int main(int argc, char *argv[])
 	float diff1, diff2;
 	clock_t t1, t2;
 	
+	int taskid, numtasks;
+	
+	MPI_Init(&argc, &argv);
+	MPI_Comm_rank(MPI_COMM_WORLD, &taskid);
+	MPI_Comm_size(MPI_COMM_WORLD, &numtasks);
+	
 	t1 = clock();
 	calculate_pi_serial();
 	t2 = clock();
@@ -27,11 +33,13 @@ int main(int argc, char *argv[])
 	printf("Calculating pi serially took %f milliseconds.\n", diff1);
 	
 	t1 = clock();
-	calculate_pi_parallel(argc, *argv);
+	calculate_pi_parallel(taskid, numtasks);
 	t2 = clock();
 	diff2 = (((float)t2 - (float)t1) / 1000000.0F ) * 1000;
 	
 	printf("Calculating pi parallel took %f milliseconds.\n", diff2);
+		
+	MPI_Finalize();
 		
 	return 0;
 }
@@ -43,19 +51,15 @@ void calculate_pi_serial()
 	printf("Pi calculated serially is %f.\n", pi);
 }
 
-void calculate_pi_parallel(int argc, char *argv[])
+void calculate_pi_parallel(int taskid, int numtasks)
 {
-	int taskid, numtasks, rc;
+	int rc;
 	int npoints;
 	
 	float pi,
 		  pi_home,
 		  pi_sum,
 		  pi_average;
-	
-	MPI_Init(&argc, &argv);
-	MPI_Comm_rank(MPI_COMM_WORLD, &taskid);
-	MPI_Comm_size(MPI_COMM_WORLD, &numtasks);
 	
 	npoints = NUM_POINTS/numtasks;
 	
@@ -78,8 +82,6 @@ void calculate_pi_parallel(int argc, char *argv[])
 		printf("Pi calculated using parallel programming is %f.", pi);
 		//printf("Average value of pi = %f\n", pi);
 	}
-
-	MPI_Finalize();
 }
 
 float dboard(int throws)
