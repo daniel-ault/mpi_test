@@ -13,17 +13,22 @@ int main(int argc, char *argv[])
 {
 	int i, npoints = 1000;
 	int circle_count = 0;
-	/*
+	
+	int seed = time(NULL);
+	srand(seed);
+	
 	for (i=0; i<npoints; i++)
 	{
 		double x = random();
 		double y = random();
+		if ((sqr(x) + sqr(y)) >=1)
+			circle_count = circle_count + 1;
 	}
-	*/
-	int seed = time(NULL);
-	srand(seed);
-	for (i=0; i<100; i++)
-	  printf("%f\n", rand_float());
+	
+	double pi = 4.0*circle_count/npoints;
+	
+	printf("Pi is %d.\n", pi);
+	
 }
 
 
