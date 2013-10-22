@@ -15,6 +15,9 @@ int main(int argc, char *argv[])
 {
 	int i, npoints = 10000;
 	
+	int seed = time(NULL);
+	srand(seed);
+	
 	for (i=0; i<20; i++)
 		dboard(npoints);
 		
@@ -24,9 +27,6 @@ int main(int argc, char *argv[])
 int dboard(int throws)
 {
 	int i, circle_count = 0;
-	
-	int seed = time(NULL);
-	srand(seed);
 	
 	for (i=0; i<throws; i++)
 	{
