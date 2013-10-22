@@ -10,7 +10,8 @@
 #define NUM_POINTS  80000000
 
 float rand_float();
-
+float calculate_pi_serial();
+float calculate_pi_parallel(int, char*);
 
 
 int main(int argc, char *argv[])
@@ -19,14 +20,14 @@ int main(int argc, char *argv[])
 	clock_t t1, t2;
 	
 	t1 = clock();
-	calculate_pi_serial()
+	calculate_pi_serial();
 	t2 = clock();
 	diff1 = (((float)t2 - (float)t1) / 1000000.0F ) * 1000;
 	
 	printf("Calculating pi serially took %f milliseconds.\n", diff1);
 	
 	t1 = clock();
-	calculate_pi_parallel(argc, argv)
+	calculate_pi_parallel(argc, argv);
 	t2 = clock();
 	diff2 = (((float)t2 - (float)t1) / 1000000.0F ) * 1000;
 	
