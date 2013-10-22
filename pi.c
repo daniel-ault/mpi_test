@@ -10,9 +10,9 @@
 #define NUM_POINTS  80000000
 
 float rand_float();
-float calculate_pi_serial();
-float calculate_pi_parallel(int, char*);
-
+void calculate_pi_serial();
+void calculate_pi_parallel(int, char*[]);
+float dboard(int);
 
 int main(int argc, char *argv[])
 {	
@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
 	printf("Calculating pi serially took %f milliseconds.\n", diff1);
 	
 	t1 = clock();
-	calculate_pi_parallel(argc, argv);
+	calculate_pi_parallel(argc, *argv);
 	t2 = clock();
 	diff2 = (((float)t2 - (float)t1) / 1000000.0F ) * 1000;
 	
@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
 	return 0;
 }
 
-float calculate_pi_serial()
+void calculate_pi_serial()
 {
 	float pi = dboard(NUM_POINTS);
 	
@@ -63,7 +63,7 @@ void calculate_pi_parallel(int argc, char *argv[])
 	int seed = time(NULL);
 	srand(seed);
 	
-	float pi_home = dboard(npoints);
+	pi_home = dboard(npoints);
 	
 	rc = MPI_Reduce(&pi_home, &pi_sum, 1, MPI_FLOAT, MPI_SUM, 
 					0, MPI_COMM_WORLD);
